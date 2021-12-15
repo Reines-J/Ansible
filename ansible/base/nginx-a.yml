@@ -1,0 +1,15 @@
+---
+- name: install nginx
+  hosts: CentOS
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: isntall epel
+      yum: name=epel-release state=latest
+    - name: install nginx
+      yum: name=nginx state=present
+    - name: upload default index.html
+      get_url: url=https://www.nginx.com dest=/usr/share/nginx/html/ mode=0644
+    - name: start nginx
+      service: name=nginx state=started
