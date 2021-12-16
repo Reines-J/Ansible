@@ -1,0 +1,52 @@
+---
+- name: setup nfs server
+  hosts: localhost
+  gather_facts: no
+
+  tasks: 
+    - name: make nfs shared dir
+      file:
+        path: /home/vagrant/nfs_shared
+        state: directory
+        mode: 0777
+
+    - name: configure /etc/exports
+      become: yes
+      lineinfile:
+        path: /etc/exports
+        line: /home/vagrant/nfs_shared <ip>(rw,sync)
+
+    - name: nfs restart
+      become: yes
+      service:
+        name: nfs
+        stae: restarted
+
+- name: setup nfs clients
+  hosts: CentOS:Ubuntu
+  gather_facts: no
+
+  tasks:
+    - name: make nfs client directory
+      file:
+        path: /home/vagrant/nfs
+        state: directory
+    - name: mount point client
+      become: yes
+      mount:
+        name: /home/vagrant/nfs
+        src: #<ip>:/home/vagrant/nfs_shared
+        fstype: nfs
+        opts: nfsvers=3
+        state: mounted
+
+- name: check mount status
+  hosts: CentOS:Ubuntu
+  gather_facts: no
+
+  tasks:
+    - name: linux nfs clients
+      shell: mount | grep nfs_shared
+      register: output
+    - debug: var=output.stdout_lines
+    
