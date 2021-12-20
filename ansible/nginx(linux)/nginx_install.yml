@@ -1,0 +1,24 @@
+---
+- name: install nginx
+  hosts: nodes
+  become: yes
+#  vars:
+#    lnx_name: "{{ 'Ubuntu' if ansible_distribution == 'Ubuntu'
+#                   else 'CentOS' if ansible_distribution == 'CentOS'
+#                   else 'Just Linux' }}"
+ 
+  tasks:
+  - name: nginx linux
+    include_tasks: "{{ lnx_name }}.yml"
+
+  - name: check nginx config
+    command: "nginx -t"
+    register: ngnix
+  - debug: msg="{{ nginx.stderr_lines }}"
+
+  - name: check ngnix service
+    debug: msg="{{lookup('template', 'ins_chk.j2').split('\n')}}"
+  
+  handlers:
+  - name: restart ngnix web server
+    service: name=nginx state=restarted
