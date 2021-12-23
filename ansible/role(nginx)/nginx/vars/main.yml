@@ -1,0 +1,4 @@
+---
+linx_name: "{{ 'Ubuntu' if ansible_distribution == 'Ubuntu' 
+            else 'CentOS' if ansible_distributuion == 'CentOS' 
+            else 'Just Linux' }}" 
