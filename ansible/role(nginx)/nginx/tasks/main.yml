@@ -1,0 +1,9 @@
+---
+- name: ngnix
+  include_tasks: "{{ lnx_name }}.yml"
+
+- name: check ngnix config
+  include_tasks: chk_ngx_cfg.yml
+
+- name: check ngnix service
+  debug: msg="{{ lookup('template', 'ins_chk.j2').split('\n')}}" 
